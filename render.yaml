@@ -1,8 +1,16 @@
 services:
-- type: web
-  name: barberapp
-  env: python
-  plan: free
-  branch: main
-  buildCommand: pip install -r requirements.txt
-  startCommand: gunicorn app:app
+  - type: web
+    name: barber-app
+    env: python
+    plan: free
+    branch: main
+    numInstances: 1
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: RENDER_INSTANCE_TYPE
+        value: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --workers 1 --threads 8 --timeout 120 app:app
+    healthCheckPath: /
+    autoDeploy: true

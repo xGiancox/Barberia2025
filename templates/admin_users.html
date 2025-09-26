@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Gestionar Usuarios{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2>👥 Gestionar Usuarios</h2>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">➕ Registrar Nuevo Usuario</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('register') }}">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" name="name" placeholder="Nombre completo" required>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="email" class="form-control" name="email" placeholder="Email" required>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="password" class="form-control" name="password" placeholder="Contraseña" required>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select" name="role" required>
+                                <option value="barbero">Barbero</option>
+                                <option value="jefe">Jefe</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-success w-100">Crear</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">📋 Usuarios Registrados ({{ users|length }})</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th>Rol</th>
+                                <th>Fecha Registro</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user_item in users %}
+                            <tr>
+                                <td>{{ user_item.name }}</td>
+                                <td>{{ user_item.email }}</td>
+                                <td>
+                                    <span class="badge {% if user_item.role == 'jefe' %}bg-warning{% else %}bg-info{% endif %}">
+                                        {{ user_item.role }}
+                                    </span>
+                                </td>
+                                <td>{{ user_item.created_at.strftime('%d/%m/%Y') }}</td>
+                                <td>
+                                    {% if user_item.role == 'barbero' %}
+                                    <a href="{{ url_for('weekly_summary') }}?user_id={{ user_item.id }}" 
+                                       class="btn btn-sm btn-outline-primary">Ver Cortes</a>
+                                    {% else %}
+                                    <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">← Volver al Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

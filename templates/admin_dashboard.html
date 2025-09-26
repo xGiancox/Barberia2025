@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Jefe{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2>👑 Dashboard - Jefe</h2>
+        <p class="text-muted">Vista general de toda la barbería</p>
+    </div>
+</div>
+
+<!-- Resumen General -->
+<div class="row mt-4">
+    <div class="col-md-3 mb-4">
+        <div class="card bg-primary text-white">
+            <div class="card-body text-center">
+                <h5>📅 Hoy</h5>
+                <h3>S/.{{ "%.2f"|format(daily_total) }}</h3>
+                <small>Total: S/.{{ "%.2f"|format(daily_divided) }} (50% Barberos)</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <div class="card bg-success text-white">
+            <div class="card-body text-center">
+                <h5>📈 7 Días</h5>
+                <h3>S/.{{ "%.2f"|format(weekly_total) }}</h3>
+                <small>Total: S/.{{ "%.2f"|format(weekly_divided) }} (50% Barberos)</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <div class="card bg-warning text-dark">
+            <div class="card-body text-center">
+                <h5>💰 30 Días</h5>
+                <h3>S/.{{ "%.2f"|format(monthly_total) }}</h3>
+                <small>Total: S/.{{ "%.2f"|format(monthly_divided) }} (50% Barberos)</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <div class="card bg-info text-white">
+            <div class="card-body text-center">
+                <h5>👥 Barberos</h5>
+                <h3>{{ users|length }}</h3>
+                <small>Total usuarios registrados</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <div class="card bg-info text-white">
+           <div class="card-body text-center">
+                <h5>🛍️ Ventas Productos</h5>
+                <h3>S/.{{ "%.2f"|format(product_sales_total) }}</h3>
+                <small>Este mes</small>
+          </div>
+        </div>
+    </div>
+
+<!-- Cortes de Hoy -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">✂️ Cortes de Hoy ({{ today_cuts|length }})</h5>
+            </div>
+            <div class="card-body">
+                {% if today_cuts %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Barbero</th>
+                                <th>Precio</th>
+                                <th>Cantidad</th>
+                                <th>Total</th>
+                                <th>50% Barbero</th>
+                                <th>Hora Registro</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cut in today_cuts %}
+                            <tr>
+                                <td>{{ cut.barber.name }}</td>
+                                <td>S/.{{ "%.2f"|format(cut.price) }}</td>
+                                <td>{{ cut.quantity }}</td>
+                                <td>S/.{{ "%.2f"|format(cut.total) }}</td>
+                                <td>S/.{{ "%.2f"|format(cut.divided_total) }}</td>
+                                <td>{{ cut.date_recorded.strftime('%H:%M') }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted">No hay cortes registrados para hoy.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Resumen por Barbero -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">📊 Resumen por Barbero (Últimos 7 días)</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Barbero</th>
+                                <th>Total Cortes</th>
+                                <th>Total Ganado</th>
+                                <th>50% Barbero</th>
+                                <th>50% Barbería</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            {% set user_cuts = today_cuts | selectattr('user_id', 'equalto', user.id) | list %}
+                            {% if user_cuts %}
+                            <tr>
+                                <td>{{ user.name }}</td>
+                                <td>{{ user_cuts|sum(attribute='quantity') }}</td>
+                                <td>S/.{{ "%.2f"|format(user_cuts|sum(attribute='total')) }}</td>
+                                <td>S/.{{ "%.2f"|format(user_cuts|sum(attribute='divided_total')) }}</td>
+                                <td>S/.{{ "%.2f"|format(user_cuts|sum(attribute='total') - user_cuts|sum(attribute='divided_total')) }}</td>
+                            </tr>
+                            {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12 text-center">
+        <a href="{{ url_for('admin_users') }}" class="btn btn-primary me-2">👥 Gestionar Usuarios</a>
+        <a href="{{ url_for('admin_expenses') }}" class="btn btn-warning me-2">💰 Gastos Mensuales</a>
+        <a href="{{ url_for('calendar') }}" class="btn btn-info">📅 Ver Calendario</a>
+    </div>
+</div>
+{% endblock %}

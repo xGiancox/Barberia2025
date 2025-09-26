@@ -1,0 +1,26 @@
+{
+    "name": "BarberApp - Sistema de Gestión",
+    "short_name": "BarberApp",
+    "description": "Sistema profesional de gestión para barberías - Control de cortes, ventas y ganancias",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#007bff",
+    "orientation": "portrait-primary",
+    "icons": [
+        {
+            "src": "/static/images/logo.jpg",
+            "sizes": "192x192",
+            "type": "image/jpeg",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/static/images/logo.jpg",
+            "sizes": "512x512", 
+            "type": "image/jpeg",
+            "purpose": "any maskable"
+        }
+    ],
+    "categories": ["business", "productivity", "finance"],
+    "lang": "es-ES"
+}

@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Calendario{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2>📅 Calendario de Cortes</h2>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-6">
+                        <label for="date" class="form-label">Seleccionar fecha:</label>
+                        <input type="date" class="form-control" id="date" name="date" 
+                               value="{{ selected_date }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="submit" class="btn btn-primary w-100">Buscar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Cortes del {{ selected_date.strftime('%d/%m/%Y') }}</h5>
+            </div>
+            <div class="card-body">
+                {% if cuts %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Precio por corte</th>
+                                <th>Cantidad</th>
+                                <th>Total</th>
+                                <th>Mi Parte (50%)</th>
+                                <th>Registrado el</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cut in cuts %}
+                            <tr>
+                                <td>S/.{{ "%.2f"|format(cut.price) }}</td>
+                                <td>{{ cut.quantity }}</td>
+                                <td>S/.{{ "%.2f"|format(cut.total) }}</td>
+                                <td>S/.{{ "%.2f"|format(cut.divided_total) }}</td>
+                                <td>{{ cut.date_recorded.strftime('%d/%m/%Y %H:%M') }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-primary">
+                                <td><strong>TOTALES</strong></td>
+                                <td></td>
+                                <td><strong>{{ cuts|sum(attribute='quantity') }}</strong></td>
+                                <td><strong>S/.{{ "%.2f"|format(cuts|sum(attribute='total')) }}</strong></td>
+                                <td><strong>S/.{{ "%.2f"|format(cuts|sum(attribute='divided_total')) }}</strong></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted">No hay cortes registrados para esta fecha.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

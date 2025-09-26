@@ -1,0 +1,27 @@
+# Base de datos SQLite
+*.db
+*.sqlite3
+instance/
+
+# Variables de entorno
+.env
+.secrets
+
+# Archivos de Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Entornos virtuales
+venv/
+env/
+.venv/
+
+# Logs
+*.log
+
+# Sistema
+.DS_Store
+Thumbs.db

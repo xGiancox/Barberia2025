@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Resumen Semanal{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2>📊 {{ page_title }}</h2>
+        <p class="text-muted">Del {{ start_date.strftime('%d/%m/%Y') }} al {{ end_date.strftime('%d/%m/%Y') }}</p>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3 mb-3">
+                        <div class="p-3 bg-primary text-white rounded">
+                            <h4>{{ total_cuts }}</h4>
+                            <small>Total Cortes</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="p-3 bg-success text-white rounded">
+                            <h4>S/.{{ "%.2f"|format(total_earned) }}</h4>
+                            <small>Total Ganado</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="p-3 bg-warning text-dark rounded">
+                            <h4>S/.{{ "%.2f"|format(total_divided) }}</h4>
+                            <small>
+                                {% if user.role == 'jefe' and specific_user_id %}
+                                Parte del Barbero (50%)
+                                {% elif user.role == 'jefe' %}
+                                Total Barberos (50%)
+                                {% else %}
+                                Mi Parte (50%)
+                                {% endif %}
+                            </small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="p-3 bg-info text-white rounded">
+                            <h4>S/.{{ "%.2f"|format(total_earned - total_divided) }}</h4>
+                            <small>
+                                {% if user.role == 'jefe' and specific_user_id %}
+                                Parte Barbería (50%)
+                                {% elif user.role == 'jefe' %}
+                                Parte Barbería (50%)
+                                {% else %}
+                                Parte Barbería (50%)
+                                {% endif %}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Detalle de Cortes</h5>
+                <div>
+                    <a href="?weeks={{ weeks_back + 1 }}{% if specific_user_id %}&user_id={{ specific_user_id }}{% endif %}" 
+                       class="btn btn-sm btn-outline-secondary">← Semana anterior</a>
+                    {% if weeks_back > 0 %}
+                    <a href="?weeks={{ weeks_back - 1 }}{% if specific_user_id %}&user_id={{ specific_user_id }}{% endif %}" 
+                       class="btn btn-sm btn-outline-secondary">Semana siguiente →</a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-body">
+                {% if cuts %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Fecha Corte</th>
+                                {% if user.role == 'jefe' and not specific_user_id %}
+                                <th>Barbero</th>
+                                {% endif %}
+                                <th>Precio</th>
+                                <th>Cantidad</th>
+                                <th>Total</th>
+                                <th>
+                                    {% if user.role == 'jefe' and specific_user_id %}
+                                    Parte Barbero (50%)
+                                    {% elif user.role == 'jefe' %}
+                                    Parte Barbero (50%)
+                                    {% else %}
+                                    Mi Parte (50%)
+                                    {% endif %}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cut in cuts %}
+                            <tr>
+                                <td>{{ cut.date_cut.strftime('%d/%m/%Y') }}</td>
+                                {% if user.role == 'jefe' and not specific_user_id %}
+                                <td>{{ cut.barber.name }}</td>
+                                {% endif %}
+                                <td>S/.{{ "%.2f"|format(cut.price) }}</td>
+                                <td>{{ cut.quantity }}</td>
+                                <td>S/.{{ "%.2f"|format(cut.total) }}</td>
+                                <td>S/.{{ "%.2f"|format(cut.divided_total) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted">No hay cortes registrados para este período.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="mt-3">
+            {% if user.role == 'jefe' and specific_user_id %}
+            <a href="{{ url_for('admin_users') }}" class="btn btn-secondary">← Volver a Usuarios</a>
+            {% elif user.role == 'jefe' %}
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">← Volver al Dashboard</a>
+            {% else %}
+            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">← Volver al Dashboard</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

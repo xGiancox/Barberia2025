@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Iniciar Sesión{% endblock %}
+
+{% block content %}
+<div class="container-fluid vh-100 login-container">
+    <div class="row h-100">
+        <div class="col-md-6 d-none d-md-flex login-left-side">
+            <div class="login-overlay">
+                <div class="login-content text-center">
+                    <img src="{{ url_for('static', filename='images/logo.jpg') }}" 
+                         alt="Logo BarberApp" 
+                         height="120" 
+                         class="mb-3 rounded">
+                    <h1 class="display-4 fw-bold text-white">BarberApp</h1>
+                    <p class="lead text-white">Sistema profesional de gestión para barberías</p>
+                    <div class="features-list">
+                        <div class="feature-item">
+                            <span class="feature-icon">📊</span>
+                            <span>Control de cortes y ganancias</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">👥</span>
+                            <span>Gestión multi-usuario</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">📱</span>
+                            <span>Acceso desde cualquier dispositivo</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 d-flex align-items-center justify-content-center login-right-side">
+            <div class="login-form-container w-100">
+                <div class="text-center mb-4 d-md-none">
+                    <img src="{{ url_for('static', filename='images/logo.jpg') }}" 
+                         alt="Logo BarberApp" 
+                         height="70" 
+                         class="mb-3 rounded">
+                    <h1 class="text-primary">BarberApp</h1>
+                    <p class="text-muted">Control Total</p>
+                </div>
+
+                <div class="card login-card shadow">
+                    <div class="card-body p-5">
+                        <div class="text-center mb-4">
+                            <h2 class="card-title login-title">¡Bienvenido!</h2>
+                            <p class="text-muted">Ingresa a tu cuenta</p>
+                        </div>
+
+                        <form method="POST" class="login-form">
+                            <div class="mb-4">
+                                <label for="email" class="form-label">📧 Correo electrónico</label>
+                                <input type="email" class="form-control" 
+                                       id="email" name="email" placeholder="tu@email.com" required>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="password" class="form-label">🔒 Contraseña</label>
+                                <input type="password" class="form-control" 
+                                       id="password" name="password" placeholder="••••••••" required>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-lg w-100 login-btn">
+                                🚪 Ingresar
+                            </button>
+
+                <div class="text-center mt-4">
+                    <small class="text-muted">© 2025 BarberApp - Sistema de Gsoluciones Pro</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

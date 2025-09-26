@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Mi Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2>📊 Dashboard - {{ user.name }}</h2>
+        <p class="text-muted">Resumen de tus cortes y ganancias</p>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-4 mb-4">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h5 class="card-title">📅 Hoy</h5>
+                <p class="card-text">
+                    <strong>Cortes:</strong> {{ today_cuts|length }}<br>
+                    <strong>Total ganado:</strong> S/.{{ "%.2f"|format(daily_total) }}<br>
+                    {% if session.user_role == 'jefe' %}
+                    <strong>Tu ganancia (100%):</strong> S/.{{ "%.2f"|format(daily_divided) }}
+                    {% else %}
+                    <strong>Mi parte (50%):</strong> S/.{{ "%.2f"|format(daily_divided) }}
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h5 class="card-title">📈 Últimos 7 días</h5>
+                <p class="card-text">
+                    <strong>Total ganado:</strong> S/.{{ "%.2f"|format(weekly_total) }}<br>
+                    {% if session.user_role == 'jefe' %}
+                    <strong>Tu ganancia (100%):</strong> S/.{{ "%.2f"|format(weekly_divided) }}
+                    {% else %}
+                    <strong>Mi parte (50%):</strong> S/.{{ "%.2f"|format(weekly_divided) }}
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card bg-warning text-dark">
+            <div class="card-body">
+                <h5 class="card-title">💰 Últimos 14 días</h5>
+                <p class="card-text">
+                    <strong>Total ganado:</strong> S/.{{ "%.2f"|format(biweekly_total) }}<br>
+                    {% if session.user_role == 'jefe' %}
+                    <strong>Tu ganancia (100%):</strong> S/.{{ "%.2f"|format(biweekly_divided) }}
+                    {% else %}
+                    <strong>Mi parte (50%):</strong> S/.{{ "%.2f"|format(biweekly_divided) }}
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">✂️ Cortes de Hoy</h5>
+            </div>
+            <div class="card-body">
+                {% if today_cuts %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Precio por corte</th>
+                                <th>Cantidad</th>
+                                <th>Total del día</th>
+                                <th>
+                                    {% if session.user_role == 'jefe' %}
+                                    Tu ganancia (100%)
+                                    {% else %}
+                                    Mi parte (50%)
+                                    {% endif %}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cut in today_cuts %}
+                            <tr>
+                                <td>S/.{{ "%.2f"|format(cut.price) }}</td>
+                                <td>{{ cut.quantity }}</td>
+                                <td>S/.{{ "%.2f"|format(cut.total) }}</td>
+                                <td>S/.{{ "%.2f"|format(cut.divided_total) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-primary">
+                                <td colspan="2"><strong>TOTALES</strong></td>
+                                <td><strong>S/.{{ "%.2f"|format(daily_total) }}</strong></td>
+                                <td><strong>S/.{{ "%.2f"|format(daily_divided) }}</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted">No hay cortes registrados para hoy.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12 text-center">
+        <a href="{{ url_for('add_cut') }}" class="btn btn-primary btn-lg me-3">➕ Registrar Corte</a>
+        <a href="{{ url_for('weekly_summary') }}" class="btn btn-info btn-lg">📊 Ver Resumen Completo</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="bi bi-plus-circle"></i> Registro Diario</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="fecha" class="form-label">Fecha:</label>
+                            <input type="date" class="form-control" id="fecha" name="fecha" 
+                                   value="{{ hoy.strftime('%Y-%m-%d') }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="cantidad_cortes" class="form-label">Cantidad de Cortes:</label>
+                            <input type="number" class="form-control" id="cantidad_cortes" 
+                                   name="cantidad_cortes" min="0" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="precio_corte" class="form-label">Precio por Corte (S/):</label>
+                            <input type="number" step="0.01" class="form-control" id="precio_corte" 
+                                   name="precio_corte" min="0" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="gastos_productos" class="form-label">Gastos en Productos (S/):</label>
+                            <input type="number" step="0.01" class="form-control" id="gastos_productos" 
+                                   name="gastos_productos" min="0" value="0">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="notas" class="form-label">Notas/Observaciones:</label>
+                        <textarea class="form-control" id="notas" name="notas" rows="3" 
+                                  placeholder="Observaciones del día..."></textarea>
+                    </div>
+                    
+                    <!-- Cálculos en tiempo real -->
+                    <div class="card mb-3">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">Resumen de Cálculos</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <small class="text-muted">Total del Día</small>
+                                    <h5 id="total-dia">S/ 0.00</h5>
+                                </div>
+                                <div class="col-4">
+                                    <small class="text-muted">Ingreso Neto</small>
+                                    <h5 id="ingreso-neto">S/ 0.00</h5>
+                                </div>
+                                <div class="col-4">
+                                    {% if current_user.role == 'jefe' %}
+                                    <small class="text-muted">Tu Ganancia (100%)</small>
+                                    <h5 id="pago-barbero" class="text-success">S/ 0.00</h5>
+                                    {% else %}
+                                    <small class="text-muted">Tu Pago (50%)</small>
+                                    <h5 id="pago-barbero" class="text-success">S/ 0.00</h5>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% if current_user.role != 'jefe' %}
+                            <div class="row text-center mt-2">
+                                <div class="col-12">
+                                    <small class="text-muted">Ganancia de la Barbería (50%)</small>
+                                    <h6 id="ganancia-barberia" class="text-info">S/ 0.00</h6>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="bi bi-check-circle"></i> Guardar Registro
+                        </button>
+                        {% if current_user.role == 'jefe' %}
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Volver al Dashboard
+                        </a>
+                        {% else %}
+                        <a href="{{ url_for('mis_registros') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Volver a Mis Registros
+                        </a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Cálculos en tiempo real
+function calcularTotales() {
+    const cortes = parseInt(document.getElementById('cantidad_cortes').value) || 0;
+    const precio = parseFloat(document.getElementById('precio_corte').value) || 0;
+    const gastos = parseFloat(document.getElementById('gastos_productos').value) || 0;
+    
+    const totalDia = cortes * precio;
+    const ingresoNeto = totalDia - gastos;
+    
+    {% if current_user.role == 'jefe' %}
+    // Para jefe: 100% del ingreso neto
+    const pagoBarbero = ingresoNeto;
+    const gananciaBarberia = 0;
+    {% else %}
+    // Para trabajadores: 50% del ingreso neto
+    const pagoBarbero = ingresoNeto / 2;
+    const gananciaBarberia = ingresoNeto / 2;
+    {% endif %}
+    
+    document.getElementById('total-dia').textContent = 'S/ ' + totalDia.toFixed(2);
+    document.getElementById('ingreso-neto').textContent = 'S/ ' + ingresoNeto.toFixed(2);
+    document.getElementById('pago-barbero').textContent = 'S/ ' + pagoBarbero.toFixed(2);
+    
+    {% if current_user.role != 'jefe' %}
+    document.getElementById('ganancia-barberia').textContent = 'S/ ' + gananciaBarberia.toFixed(2);
+    {% endif %}
+}
+
+document.getElementById('cantidad_cortes').addEventListener('input', calcularTotales);
+document.getElementById('precio_corte').addEventListener('input', calcularTotales);
+document.getElementById('gastos_productos').addEventListener('input', calcularTotales);
+
+// Calcular al cargar la página
+document.addEventListener('DOMContentLoaded', calcularTotales);
+</script>
+{% endblock %}

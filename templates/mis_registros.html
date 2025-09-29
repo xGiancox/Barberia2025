@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4">
+            <i class="bi bi-list-check"></i> Mis Registros
+            <small class="text-muted">- {{ current_user.nombre }}</small>
+        </h2>
+    </div>
+</div>
+
+<!-- Resumen de Pagos -->
+<div class="row mb-4">
+    <div class="col-md-4 mb-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body text-center">
+                <h4>S/ {{ "%.2f"|format(pago_semana) }}</h4>
+                <p class="mb-0">Pago Semanal</p>
+                <small>(Esta semana)</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-3">
+        <div class="card text-white bg-success">
+            <div class="card-body text-center">
+                <h4>S/ {{ "%.2f"|format(pago_quincena) }}</h4>
+                <p class="mb-0">Pago Quincenal</p>
+                <small>(Últimos 15 días)</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-3">
+        <div class="card text-white bg-info">
+            <div class="card-body text-center">
+                <h4>S/ {{ "%.2f"|format(total_pagos) }}</h4>
+                <p class="mb-0">Total Acumulado</p>
+                <small>(Todos los registros)</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Lista de Registros -->
+<div class="card">
+    <div class="card-header bg-secondary text-white">
+        <h5 class="mb-0">Historial de Registros</h5>
+    </div>
+    <div class="card-body">
+        {% if registros %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Cortes</th>
+                        <th>Precio/Corte</th>
+                        <th>Total Día</th>
+                        <th>Gastos</th>
+                        <th>Mi Pago (50%)</th>
+                        <th>Ganancia Barbería</th>
+                        <th>Notas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for registro in registros %}
+                    <tr>
+                        <td>{{ registro.fecha.strftime('%d/%m/%Y') }}</td>
+                        <td>{{ registro.cantidad_cortes }}</td>
+                        <td>S/ {{ "%.2f"|format(registro.precio_corte) }}</td>
+                        <td>S/ {{ "%.2f"|format(registro.total_dia) }}</td>
+                        <td>S/ {{ "%.2f"|format(registro.gastos_productos) }}</td>
+                        <td class="fw-bold text-success">S/ {{ "%.2f"|format(registro.pago_barbero) }}</td>
+                        <td class="text-info">S/ {{ "%.2f"|format(registro.ganancia_barberia) }}</td>
+                        <td>{{ registro.notas or '-' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <i class="bi bi-inbox fs-1 text-muted"></i>
+            <p class="text-muted">No hay registros aún</p>
+            <a href="{{ url_for('registro_diario') }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Crear Primer Registro
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Acciones -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-grid gap-2 d-md-flex">
+                    <a href="{{ url_for('registro_diario') }}" class="btn btn-primary me-md-2">
+                        <i class="bi bi-plus-circle"></i> Nuevo Registro
+                    </a>
+                    <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">
+                        <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Información Importante -->
+<div class="alert alert-info mt-3">
+    <h6><i class="bi bi-info-circle"></i> Información de Pagos</h6>
+    <ul class="mb-0">
+        <li><strong>Mi Pago (50%):</strong> Tu ganancia por los cortes realizados</li>
+        <li><strong>Ganancia Barbería (50%):</strong> Porcentaje que corresponde a la barbería</li>
+        <li><strong>Pago Semanal:</strong> Suma de todos tus registros de los últimos 7 días</li>
+        <li><strong>Pago Quincenal:</strong> Suma de todos tus registros de los últimos 15 días</li>
+    </ul>
+</div>
+{% endblock %}
